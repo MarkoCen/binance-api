@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import createHmac from 'create-hmac';
 import { stringify } from 'query-string';
-import { SiteType } from './models';
+import { APIEndpoints, SiteType } from './models';
 
 export class RestfulAPIClient {
   private readonly apiKey: string;
@@ -28,7 +28,7 @@ export class RestfulAPIClient {
     if (this.useServerTime) {
       const { serverTime } = await this.request<{ serverTime: number }>({
         method: 'GET',
-        url: '/api/v3/time',
+        url: APIEndpoints.time,
       });
       return serverTime;
     } else {
@@ -60,6 +60,9 @@ export class RestfulAPIClient {
         headers,
       },
     ).then((res) => {
+      if (!res.ok) {
+        throw res;
+      }
       return res.json();
     });
   }
