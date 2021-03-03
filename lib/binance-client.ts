@@ -1,5 +1,10 @@
 import { RestfulAPIClient } from './http';
-import { APIEndpoints, ClientConfigOptions, SiteType } from './models';
+import {
+  APIEndpoints,
+  ClientConfigOptions,
+  NumString,
+  SiteType,
+} from './models';
 import { ExchangeInfo, OrderBook } from './binance-response';
 
 export class BinanceClient {
@@ -88,13 +93,25 @@ export class BinanceClient {
     symbol: string,
     limit?: 5 | 10 | 20 | 50 | 100 | 500 | 1000 | 5000,
   ): Promise<OrderBook> {
-    return this.restfulApi.get({
-      path: APIEndpoints.depth,
-      private: false,
-      params: {
-        symbol,
-        limit: limit ?? 100,
-      },
-    });
+    return this.restfulApi
+      .get<{
+        lastUpdateId: number;
+        bids: [NumString, NumString][];
+        asks: [NumString, NumString][];
+      }>({
+        path: APIEndpoints.depth,
+        private: false,
+        params: {
+          symbol,
+          limit: limit ?? 100,
+        },
+      })
+      .then((raw) => {
+        return {
+          lastUpdateId: raw.lastUpdateId,
+          bids: raw.bids.map((bid) => ({ price: bid[0], qty: bid[1] })),
+          asks: raw.asks.map((ask) => ({ price: ask[0], qty: ask[1] })),
+        };
+      });
   }
 }

@@ -41,6 +41,6 @@ export interface ExchangeInfo {
 
 export interface OrderBook {
   lastUpdateId: number;
-  bids: [NumString, NumString][];
-  asks: [NumString, NumString][];
+  bids: { price: NumString; qty: NumString }[];
+  asks: { price: NumString; qty: NumString }[];
 }
