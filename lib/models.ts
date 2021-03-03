@@ -19,3 +19,10 @@ export const APIEndpoints = {
   exchangeInfo: '/api/v3/exchangeInfo',
   depth: '/api/v3/depth',
 };
+
+export type APISecurityType =
+  | 'NONE'
+  | 'TRADE'
+  | 'USER_DATA'
+  | 'USER_STREAM'
+  | 'MARKET_DATA';

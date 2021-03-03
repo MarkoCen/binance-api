@@ -58,7 +58,6 @@ export class BinanceClient {
   async test(): Promise<void> {
     await this.restfulApi.get({
       path: APIEndpoints.ping,
-      private: false,
     });
   }
 
@@ -68,7 +67,6 @@ export class BinanceClient {
   async checkServerTime(): Promise<number> {
     const { serverTime } = await this.restfulApi.get<{ serverTime: number }>({
       path: APIEndpoints.time,
-      private: false,
     });
 
     return serverTime;
@@ -80,7 +78,6 @@ export class BinanceClient {
   async exchangeInfo(): Promise<ExchangeInfo> {
     return this.restfulApi.get<ExchangeInfo>({
       path: APIEndpoints.exchangeInfo,
-      private: false,
     });
   }
 
@@ -100,7 +97,6 @@ export class BinanceClient {
         asks: [NumString, NumString][];
       }>({
         path: APIEndpoints.depth,
-        private: false,
         params: {
           symbol,
           limit: limit ?? 100,

@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import createHmac from 'create-hmac';
 import { stringify } from 'query-string';
-import { APIEndpoints, SiteType } from './models';
+import { APIEndpoints, APISecurityType, SiteType } from './models';
 
 export class RestfulAPIClient {
   private readonly apiKey: string;
@@ -69,14 +69,22 @@ export class RestfulAPIClient {
 
   async get<T = unknown>(opts: {
     path: string;
-    private: boolean;
+    security?: APISecurityType;
     params?: { [key in string]: any };
   }): Promise<T> {
     let params = opts.params ? { ...opts.params } : {};
     const headers: { [key in string]: string } = {};
 
-    if (opts.private) {
+    const needApiKey = opts.security && opts.security !== 'NONE';
+    const needSignature =
+      opts.security &&
+      (opts.security === 'TRADE' || opts.security === 'USER_DATA');
+
+    if (needApiKey) {
       headers['X-MBX-APIKEY'] = this.apiKey;
+    }
+
+    if (needSignature) {
       params.timestamp = await this.timestamp();
       params.signature = await this.sign(params);
     }
@@ -91,14 +99,22 @@ export class RestfulAPIClient {
 
   async post<T = unknown>(opts: {
     path: string;
-    private: boolean;
+    security?: APISecurityType;
     params?: { [key in string]: any };
   }): Promise<T> {
     let params = opts.params ? { ...opts.params } : {};
     const headers: { [key in string]: string } = {};
 
-    if (opts.private) {
+    const needApiKey = opts.security && opts.security !== 'NONE';
+    const needSignature =
+      opts.security &&
+      (opts.security === 'TRADE' || opts.security === 'USER_DATA');
+
+    if (needApiKey) {
       headers['X-MBX-APIKEY'] = this.apiKey;
+    }
+
+    if (needSignature) {
       params.timestamp = await this.timestamp();
       params.signature = await this.sign(params);
     }
